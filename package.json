@@ -1,20 +1,20 @@
 {
-    "name": "@tradegen/keeper-network-subgraph",
-    "version": "1.0.0",
-    "repository": "https://github.com/Tradegen/keeper-network-subgraph",
-    "license": "GPL-3.0-or-later",
-    "scripts": {
-      "codegen": "graph codegen --output-dir src/types/",
-      "build": "graph build"
-    },
-    "devDependencies": {
-      "typescript": "^3.5.2"
-    },
-    "files": [
-      "schema.graphql"
-    ],
-    "dependencies": {
-      "@graphprotocol/graph-cli": "^0.20.0",
-      "@graphprotocol/graph-ts": "^0.20.0"
-    }
+  "name": "@tradegen/keeper-network-subgraph",
+  "version": "1.0.0",
+  "repository": "https://github.com/Tradegen/keeper-network-subgraph",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "codegen": "graph codegen --output-dir src/types/",
+    "build": "graph build"
+  },
+  "devDependencies": {
+    "typescript": "^3.5.2"
+  },
+  "files": [
+    "schema.graphql"
+  ],
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.20.0",
+    "@graphprotocol/graph-ts": "^0.20.0"
   }
+}
