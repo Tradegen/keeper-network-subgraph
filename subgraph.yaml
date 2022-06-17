@@ -1,0 +1,44 @@
+specVersion: 0.0.2
+description: Tradegen is a decentralized asset management and algo trading platform on Celo.
+repository: https://github.com/Tradegen/keeper-network-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: KeeperRegistry
+    network: celo-alfajores
+    source:
+      address: "0x6E73407c98b937edCd8833e3F2C4b9D4D0e97416"
+      abi: KeeperRegistry
+      startBlock: 11577610
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/KeeperRegistry.ts
+      entities:
+        - Keeper
+      abis:
+        - name: KeeperRegistry
+          file: ./abis/KeeperRegistry.json
+      eventHandlers:
+        - event: AddedFunds(uint256,address,uint256)
+          handler: handleAddedFunds
+        - event: WithdrewFunds(uint256,address,uint256)
+          handler: handleWithdrewFunds
+        - event: UpdatedPayee(address,address)
+          handler: handleUpdatedPayee
+        - event: ClaimedFees(address,address,uint256)
+          handler: handleClaimedFees
+        - event: CanceledJob(uint256)
+          handler: handleCanceledJob
+        - event: ChargedFee(uint256,address,uint256)
+          handler: handleChargedFee
+        - event: UpdatedKeeperFee(address,uint256)
+          handler: handleUpdatedKeeperFee
+        - event: RegisteredKeeper(address,address,address,address,uint256)
+          handler: handleRegisteredKeeper
+        - event: CreatedJob(uint8,uint256,address,address,address,uint256)
+          handler: handleCreatedJob
+        - event: UpdatedDedicatedCaller(address,address)
+          handler: handleUpdatedDedicatedCaller

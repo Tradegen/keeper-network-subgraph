@@ -1,0 +1,131 @@
+type KeeperRegistry @entity {
+    # KeeperRegistry contract address.
+    id: ID!
+
+    keeperCount: Int!
+    jobCount: Int!
+    totalRevenue: BigInt!
+    totalUpkeepsPerformed: Int!
+    txCount: Int!
+}
+
+type Job @entity {
+    # Job ID in KeeperRegistry.
+    id: ID!
+
+    # 0 = indicator.
+    # 1 = comparator.
+    # 2 = trading bot.
+    jobType: BigInt!
+
+    keeper: Keeper!
+
+    # Address of the external contract this job is responsible for.
+    target: String!
+
+    # Indicator/comparator instance ID.
+    # This value is 0 if the target is a trading bot.
+    instanceID: BigInt!
+
+    # User who created this job.
+    owner: JobOwner!
+
+    numberOfUpdates: Int!
+    availableFunds: BigInt!
+    lastUpdated: BigInt!
+
+    # Total amount of fees (in TGEN) that this job has paid.
+    feesPaid: BigInt!
+}
+
+type Payee @entity {
+    # Payee's wallet address.
+    id: ID!
+
+    # Total amount of fees (in TGEN) that the payee has collected.
+    collectedFees: BigInt!
+
+    keepers: [Keeper!]! @derivedFrom(field: "payee")
+}
+
+type JobOwner @entity {
+    # Job owner's wallet address.
+    id: ID!
+
+    # Total amount of fees (in TGEN) that the job owner has paid across all jobs.
+    feesPaid: BigInt!
+
+    jobs: [Job!]! @derivedFrom(field: "owner")
+}
+
+type Keeper @entity {
+    # Keeper contract address.
+    id: ID!
+
+    # Address of the user who deployed this keeper.
+    owner: String!
+
+    # Measured in TGEN.
+    fee: BigInt!
+
+    # Receives keeper fees.
+    payee: Payee!
+
+    # Total fees (in TGEN) collected by this keeper.
+    collectedFees: BigInt!
+
+    # Address of the user/contract that can perform upkeeps on behalf of this keeper.
+    dedicatedCaller: String!
+
+    # Total number of job updates this keeper has performed.
+    numberOfUpdates: Int!
+
+    createdOn: BigInt!
+
+    jobs: [Job!]! @derivedFrom(field: "keeper")
+}
+
+type Update @entity {
+    # Transaction hash.
+    id: ID!
+
+    job: Job!
+
+    keeper: Keeper!
+
+    timestamp: BigInt!
+
+    # Amount paid (in TGEN).
+    feePaid: BigInt!
+}
+
+type KeeperRegistryDayData @entity {
+    id: ID!
+    date: Int!
+
+    # Measured in TGEN.
+    dailyRevenue: BigInt!
+    totalRevenue: BigInt!
+
+    dailyTxns: Int!
+
+    dailyUpkeepsPerformed: Int!
+    totalUpkeepsPerformed: Int!
+
+    dailyKeepersRegistered: Int!
+    totalKeepersRegistered: Int!
+
+    dailyJobsCreated: Int!
+    totalJobsCreated: Int!
+}
+
+type KeeperDayData @entity {
+    id: ID!
+    date: Int!
+
+    # Measured in TGEN.
+    dailyRevenue: BigInt!
+
+    dailyTxns: Int!
+    dailyUpkeepsPerformed: Int!
+}
