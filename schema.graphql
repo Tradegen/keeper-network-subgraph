@@ -2,10 +2,20 @@ type KeeperRegistry @entity {
     # KeeperRegistry contract address.
     id: ID!
 
+    # Number of keepers registered in the system.
     keeperCount: Int!
+
+    # Total number of jobs created.
     jobCount: Int!
+
+    # Total revenue collected across all keepers.
+    # Measured in the protocol's governance token.
     totalRevenue: BigInt!
+
+    # Total number of upkeeps performed across all keepers.
     totalUpkeepsPerformed: Int!
+
+    # Total number of transactions.
     txCount: Int!
 }
 
@@ -18,6 +28,7 @@ type Job @entity {
     # 2 = trading bot.
     jobType: BigInt!
 
+    # Reference to the parent Keeper entity.
     keeper: Keeper!
 
     # Address of the external contract this job is responsible for.
@@ -30,11 +41,20 @@ type Job @entity {
     # User who created this job.
     owner: JobOwner!
 
+    # Number of times this job has been updated.
     numberOfUpdates: Int!
+
+    # Amount of tokens available for this job.
+    # The job owner supplies tokens to the job when creating the job.
+    # This is used for paying the keeper fee.
+    # Measured in the protocol's governance token.
     availableFunds: BigInt!
+
+    # Timestamp at which the job was last updated
     lastUpdated: BigInt!
 
-    # Total amount of fees (in TGEN) that this job has paid.
+    # Total amount of fees that this job has paid.
+    # Measured in the protocol's governance token.
     feesPaid: BigInt!
 }
 
@@ -42,9 +62,11 @@ type Payee @entity {
     # Payee's wallet address.
     id: ID!
 
-    # Total amount of fees (in TGEN) that the payee has collected.
+    # Total amount of fees that the payee has collected.
+    # Measured in the protocol's governance token.
     collectedFees: BigInt!
 
+    # Keeper entities with this payee.
     keepers: [Keeper!]! @derivedFrom(field: "payee")
 }
 
@@ -52,9 +74,11 @@ type JobOwner @entity {
     # Job owner's wallet address.
     id: ID!
 
-    # Total amount of fees (in TGEN) that the job owner has paid across all jobs.
+    # Total amount of fees that the job owner has paid across all jobs.
+    # Measured in the protocol's governance token.
     feesPaid: BigInt!
 
+    # All jobs that are owned by this user.
     jobs: [Job!]! @derivedFrom(field: "owner")
 }
 
@@ -65,13 +89,14 @@ type Keeper @entity {
     # Address of the user who deployed this keeper.
     owner: String!
 
-    # Measured in TGEN.
+    # Measured in the protocol's governance token.
     fee: BigInt!
 
     # Receives keeper fees.
     payee: Payee!
 
-    # Total fees (in TGEN) collected by this keeper.
+    # Total fees collected by this keeper.
+    # Measured in the protocol's governance token.
     collectedFees: BigInt!
 
     # Address of the user/contract that can perform upkeeps on behalf of this keeper.
@@ -80,8 +105,10 @@ type Keeper @entity {
     # Total number of job updates this keeper has performed.
     numberOfUpdates: Int!
 
+    # Timestamp at which the Keeper contract was created.
     createdOn: BigInt!
 
+    # All jobs that this keeper is responsible for.
     jobs: [Job!]! @derivedFrom(field: "keeper")
 }
 
@@ -89,21 +116,27 @@ type Update @entity {
     # Transaction hash.
     id: ID!
 
+    # Reference to the Job that was updated.
     job: Job!
 
+    # Reference to the Keeper that performed the upkeep.
     keeper: Keeper!
 
+    # Timestamp at which the upkeep was performed.
     timestamp: BigInt!
 
-    # Amount paid (in TGEN).
+    # Amount of tokens paid to update the job.
+    # Measured in the protocol's governance token.
     feePaid: BigInt!
 }
 
+# Data accumulated and condensed into day stats for all of the keeper network.
 type KeeperRegistryDayData @entity {
+    # Timestamp rounded to current day by dividing by 86400.
     id: ID!
     date: Int!
 
-    # Measured in TGEN.
+    # Measured in the protocol's governance token.
     dailyRevenue: BigInt!
     totalRevenue: BigInt!
 
@@ -120,10 +153,11 @@ type KeeperRegistryDayData @entity {
 }
 
 type KeeperDayData @entity {
+    # Timestamp rounded to current day by dividing by 86400.
     id: ID!
     date: Int!
 
-    # Measured in TGEN.
+    # Measured in the protocol's governance token.
     dailyRevenue: BigInt!
 
     dailyTxns: Int!

@@ -1,4 +1,7 @@
 import {
+    BigInt
+  } from "@graphprotocol/graph-ts";
+import {
   KeeperRegistry,
   Job,
   Payee,
@@ -34,7 +37,7 @@ export function handleAddedFunds(event: AddedFunds): void {
     keeperRegistry.save();
 
     let job = Job.load(event.params.jobID.toString());
-    job.availableFunds = job?.availableFunds.plus(event.params.amount);
+    job.availableFunds = job.availableFunds.plus(event.params.amount);
     job.save();
 
     updateKeeperRegistryDayData(event);
@@ -47,7 +50,7 @@ export function handleWithdrewFunds(event: WithdrewFunds): void {
     keeperRegistry.save();
 
     let job = Job.load(event.params.jobID.toString());
-    job.availableFunds = job?.availableFunds.minus(event.params.amount);
+    job.availableFunds = job.availableFunds.minus(event.params.amount);
     job.save();
 
     updateKeeperRegistryDayData(event);
@@ -97,7 +100,7 @@ export function handleCanceledJob(event: CanceledJob): void {
 
     let job = Job.load(event.params.jobID.toString());
     job.keeper = "";
-    job.availableFunds = 0;
+    job.availableFunds = ZERO_BI;
     job.owner = "";
     job.save();
 
@@ -117,7 +120,7 @@ export function handleChargedFee(event: ChargedFee): void {
     job.numberOfUpdates = job.numberOfUpdates + 1;
     job.lastUpdated = event.block.timestamp;
     job.feesPaid = job.feesPaid.plus(event.params.amount);
-    job?.save();
+    job.save();
 
     let payee = Payee.load(event.params.payee.toHexString());
     payee.collectedFees = payee.collectedFees.plus(event.params.amount);
@@ -160,7 +163,7 @@ export function handleUpdatedKeeperFee(event: UpdatedKeeperFee): void {
     updateKeeperRegistryDayData(event);
 }
 
-export function handlerRegisteredKeeper(event: RegisteredKeeper): void {
+export function handleRegisteredKeeper(event: RegisteredKeeper): void {
     // Update global values.
     let keeperRegistry = KeeperRegistry.load(KEEPER_REGISTRY_ADDRESS);
     if (keeperRegistry === null) 
@@ -220,7 +223,7 @@ export function handleCreatedJob(event: CreatedJob): void {
     owner.save();
 
     let job = new Job(event.params.jobID.toString());
-    job.jobType = event.params.jobType;
+    job.jobType = BigInt.fromI32(event.params.jobType);
     job.keeper = event.params.keeper.toHexString();
     job.target = event.params.target.toHexString();
     job.instanceID = event.params.instanceID;
@@ -243,7 +246,7 @@ export function handleUpdatedDedicatedCaller(event: UpdatedDedicatedCaller): voi
     keeperRegistry.save();
 
     let keeper = Keeper.load(event.params.keeper.toHexString());
-    keeper.dedicatedCaller = event.params.newCaller;
+    keeper.dedicatedCaller = event.params.newCaller.toHexString();
     keeper.save();
 
     updateKeeperRegistryDayData(event);
